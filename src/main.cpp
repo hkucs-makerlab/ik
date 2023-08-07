@@ -9,15 +9,19 @@
 // LEG CONFIGURATION
 //
 //        FRONT
-// L3-------|-------L4
-// L2-------|-------L5
-// L1-------|-------L6
+// L2-------|-------L3
+//   -------|-------
+// L1-------|-------L4
 //
 // https://youtu.be/HjmIOKSp7v4
 //
 #include <Arduino.h>
 #ifdef ESP32
 #include <ESP32Servo.h>
+#endif
+
+#ifdef AVR
+#include <Servo.h>
 #endif
 
 // Debug
@@ -129,7 +133,7 @@ class Joint {
   int8_t AngleOffset;
 
   // CTOR
-  Joint() :angle(90),Inverted(false),AngleOffset(0){
+  Joint() : angle(90), Inverted(false), AngleOffset(0) {
   }
 
   // Methods
@@ -143,7 +147,7 @@ class Joint {
   }
 
   bool Update(int targetAngle, unsigned long __angleTimeGap = 10) {
-    //Serial.println(targetAngle);
+    // Serial.println(targetAngle);
     if (angle == targetAngle) {
       return true;
     }
@@ -176,13 +180,13 @@ class Joint {
 class Leg {
  public:
   // CTOR
-  Leg(): doIK(true),_LegAngle(0) {
+  Leg() : _LegAngle(0), doIK(true) {
   }
 
   // THE OFFSETS ALLOW ALL THE LEGS TO 'REST'
   // AT THE SAME PLACE RELATIVE TO J1, THE ANGLE
   // ALLOWS THEM TO MOVE IN THE SAME XY PLANE
-  void Setup(double Angle=0) {
+  void Setup(double Angle = 0) {
     _LegAngle = Angle;
     doIK = true;
   }
@@ -236,42 +240,51 @@ class Leg {
 // ##### ##### ##### ##### ##### ##### ##### ##### ##### MAIN
 // Servo pins
 #ifdef ESP32
-#define L1J1Pin 23
-#define L1J2Pin 22
-#define L1J3Pin L3J3Pin
+#define L1J1Pin 5
+#define L1J2Pin 18
+#define L1J3Pin 19
 
-#define L2J1Pin 19
-#define L2J2Pin 18
-#define L2J3Pin 5
+#define L2J1Pin 15
+#define L2J2Pin 2
+#define L2J3Pin 4
 
-#define L3J1Pin 17
-#define L3J2Pin 16
-#define L3J3Pin 21
+#define L3J1Pin 12
+#define L3J2Pin 14
+#define L3J3Pin 27
 
-#define L4J1Pin 13
-#define L4J2Pin 12
-#define L4J3Pin 14
+#define L4J1Pin 25
+#define L4J2Pin 33
+#define L4J3Pin 32
+#endif  // ESP32
 
-#define L5J1Pin 27
-#define L5J2Pin 26
-#define L5J3Pin 25
+#ifdef AVR
+#define L1J1Pin 5
+#define L1J2Pin 13
+#define L1J3Pin 12
 
-#define L6J1Pin 4
-#define L6J2Pin 2
-#define L6J3Pin L4J3Pin
-#endif // ESP32
+#define L2J1Pin 10
+#define L2J2Pin 11
+#define L2J3Pin 7
+
+#define L3J1Pin 9
+#define L3J2Pin 8
+#define L3J3Pin 6
+
+#define L4J1Pin 4
+#define L4J2Pin 3
+#define L4J3Pin 2
+#endif
 
 // Legs
 Leg L1;
 Leg L2;
 Leg L3;
 Leg L4;
-Leg L5;
-Leg L6;
 
 // Joints
 Joint L1J1;
 Joint L1J2;
+Joint L1J3;
 
 Joint L2J1;
 Joint L2J2;
@@ -285,13 +298,6 @@ Joint L4J1;
 Joint L4J2;
 Joint L4J3;
 
-Joint L5J1;
-Joint L5J2;
-Joint L5J3;
-
-Joint L6J1;
-Joint L6J2;
-
 // Joint Variables
 double AXAct = 0.0;
 double AYAct = 0.0;
@@ -304,13 +310,11 @@ void loop() {
   bool stepComplete = true;
 
   // stepComplete &= L1.CartesianMove(AXAct, AYAct, AZAct, &L1J1, &L1J2, &L4J3);
-  stepComplete &= L2.CartesianMove(AXAct, AYAct, AZAct, &L2J1, &L2J2, &L2J3);
-  // stepComplete &= L3.CartesianMove(AXAct, AYAct, AZAct, &L3J1, &L3J2, &L3J3);
+  // stepComplete &= L2.CartesianMove(AXAct, AYAct, AZAct, &L2J1, &L2J2, &L2J3);
+  stepComplete &= L3.CartesianMove(AXAct, AYAct, AZAct, &L3J1, &L3J2, &L3J3);
   // stepComplete &= L4.CartesianMove(AXAct, AYAct, AZAct, &L4J1, &L4J2, &L4J3);
-  stepComplete &= L5.CartesianMove(AXAct, AYAct, AZAct, &L5J1, &L5J2, &L5J3);
-  // stepComplete &= L6.CartesianMove(AXAct, AYAct, AZAct, &L6J1, &L6J2, &L3J3);
 
-  if (stepComplete) {  
+  if (stepComplete) {
     commandStep++;
     if (commandStep > lastLine) {
       commandStep = 0;
@@ -342,27 +346,26 @@ void setup() {
   // THIS SHOULDN'T BE NEEDED FOR STRONG SERVOS WITH ACCURATE CONSTRUCTION.
 
   // all servos at 90 degree after setup
+  // left rear
   L1J1.Setup(L1J1Pin);
   L1J2.Setup(L1J2Pin);
+  L1J3.Setup(L1J3Pin);
 
+  // left front
   L2J1.Setup(L2J1Pin, true);
   L2J2.Setup(L2J2Pin, true);
   L2J3.Setup(L2J3Pin, true);
 
-  L3J1.Setup(L3J1Pin, true);
-  L3J2.Setup(L3J2Pin, true);
-  L3J3.Setup(L3J3Pin, true);
+  // right front
+  L3J1.Setup(L3J1Pin);
+  L3J2.Setup(L3J2Pin);
+  L3J3.Setup(L3J3Pin);
 
-  L4J1.Setup(L4J1Pin);
-  L4J2.Setup(L4J2Pin);
-  L4J3.Setup(L4J3Pin);
+  // right rear
+  L4J1.Setup(L4J1Pin,true);
+  L4J2.Setup(L4J2Pin,true);
+  L4J3.Setup(L4J3Pin,true);
 
-  L5J1.Setup(L5J1Pin);
-  L5J2.Setup(L5J2Pin);
-  L5J3.Setup(L5J3Pin);
-
-  L6J1.Setup(L6J1Pin,true);
-  L6J2.Setup(L6J2Pin,true);
   // while (1)
   //   ;
 
@@ -370,8 +373,7 @@ void setup() {
   // L2.Setup();
   // L3.Setup();
   // L4.Setup();
-  // L5.Setup();
-  // L6.Setup();
+
 
   // Stand Up
   bool l = false;
@@ -381,8 +383,6 @@ void setup() {
     l &= L2.CartesianMove(0, 0, 0, &L2J1, &L2J2, &L2J3);
     l &= L3.CartesianMove(0, 0, 0, &L3J1, &L3J2, &L3J3);
     l &= L4.CartesianMove(0, 0, 0, &L4J1, &L4J2, &L4J3);
-    l &= L5.CartesianMove(0, 0, 0, &L5J1, &L5J2, &L5J3);
-    l &= L6.CartesianMove(0, 0, 0, &L6J1, &L6J2, &L3J3);
   }
   delay(2000);
 #ifdef DEBUG
