@@ -125,22 +125,29 @@ const double lines[][3] = {{0.0, 0.0, 0.0},
 // ##### ##### ##### ##### ##### ##### ##### ##### ##### JOINT CLASS
 class Joint {
  private:
-  int angle;
   unsigned long prevTime;
   bool Inverted;
+  int angle;
   int8_t AngleOffset;
   Servo _Servo;
   uint8_t _Pin;
 
  public:
   // CTOR
-  Joint() : angle(90), Inverted(false), AngleOffset(0) {
+  Joint(uint8_t pin = -1, bool inv = false) : Inverted(inv), angle(90), AngleOffset(0), _Pin(pin) {
   }
 
   // Methods
   void Setup(uint8_t Pin, bool I = false, int8_t Ao = 0) {
     _Pin = Pin;
     Inverted = I;
+    AngleOffset = Ao;
+    _Servo.attach(_Pin, 500, 2500);
+    _Servo.write(angle + AngleOffset);
+    prevTime = millis();
+  }
+
+  void Setup(int8_t Ao = 0) {
     AngleOffset = Ao;
     _Servo.attach(_Pin, 500, 2500);
     _Servo.write(angle + AngleOffset);
@@ -176,18 +183,21 @@ class Joint {
 class Leg {
  public:
   // CTOR
-  Leg() : _LegAngle(0), doIK(true) {
+  Leg(Joint &coxa, Joint &fumer, Joint &tibia) : _LegAngle(0), doIK(true), _coxa(coxa), _fumer(fumer), _tibia(tibia) {
   }
 
   // THE OFFSETS ALLOW ALL THE LEGS TO 'REST'
   // AT THE SAME PLACE RELATIVE TO J1, THE ANGLE
   // ALLOWS THEM TO MOVE IN THE SAME XY PLANE
-  void Setup(double Angle = 0) {
+  void Setup(double Angle = 0, int8_t Ao = 0) {
     _LegAngle = Angle;
+    _coxa.Setup(Ao);
+    _fumer.Setup(Ao);
+    _tibia.Setup(Ao);
     doIK = true;
   }
 
-  bool CartesianMove(double X, double Y, double Z, Joint *Joint1, Joint *Joint2, Joint *Joint3) {
+  bool CartesianMove(double X, double Y, double Z) {
     if (doIK) {
       // Apply XYZ Offsets
       Y += Y_Rest;
@@ -215,9 +225,9 @@ class Leg {
     //
     bool l = true;
     if (!doIK) {
-      l &= Joint1->Update(90 - J1);
-      l &= Joint2->Update(90 - J2);
-      l &= Joint3->Update(J3 + J3_LegAngle);
+      l &= _coxa.Update(90 - J1);
+      l &= _fumer.Update(90 - J2);
+      l &= _tibia.Update(J3 + J3_LegAngle);
       if (l) doIK = true;
     }
 
@@ -231,6 +241,9 @@ class Leg {
   double J1;
   double J2;
   double J3;
+  Joint &_coxa;
+  Joint &_fumer;
+  Joint &_tibia;
 };
 
 // ##### ##### ##### ##### ##### ##### ##### ##### ##### MAIN
@@ -272,28 +285,28 @@ class Leg {
 #define L4J3Pin 2
 #endif
 
-// Legs
-Leg L1;
-Leg L2;
-Leg L3;
-Leg L4;
-
 // Joints
-Joint L1J1;
-Joint L1J2;
-Joint L1J3;
+Joint L1J1(L1J1Pin);
+Joint L1J2(L1J2Pin);
+Joint L1J3(L1J3Pin);
 
-Joint L2J1;
-Joint L2J2;
-Joint L2J3;
+Joint L2J1(L2J1Pin, true);
+Joint L2J2(L2J2Pin, true);
+Joint L2J3(L2J3Pin, true);
 
-Joint L3J1;
-Joint L3J2;
-Joint L3J3;
+Joint L3J1(L3J1Pin);
+Joint L3J2(L3J2Pin);
+Joint L3J3(L3J3Pin);
 
-Joint L4J1;
-Joint L4J2;
-Joint L4J3;
+Joint L4J1(L4J1Pin, true);
+Joint L4J2(L4J2Pin, true);
+Joint L4J3(L4J3Pin, true);
+
+// Legs
+Leg L1(L1J1, L1J2, L1J3);  // left rear
+Leg L2(L2J1, L2J2, L2J3);  // left front
+Leg L3(L3J1, L3J2, L3J3);  // right front
+Leg L4(L4J1, L4J2, L4J3);  // right rear
 
 // Joint Variables
 double AXAct = 0.0;
@@ -306,10 +319,10 @@ void loop() {
   const int lastLine = 61;
   bool stepComplete = true;
 
-  // stepComplete &= L1.CartesianMove(AXAct, AYAct, AZAct, &L1J1, &L1J2, &L4J3);
-  // stepComplete &= L2.CartesianMove(AXAct, AYAct, AZAct, &L2J1, &L2J2, &L2J3);
-  stepComplete &= L3.CartesianMove(AXAct, AYAct, AZAct, &L3J1, &L3J2, &L3J3);
-  // stepComplete &= L4.CartesianMove(AXAct, AYAct, AZAct, &L4J1, &L4J2, &L4J3);
+  // stepComplete &= L1.CartesianMove(AXAct, AYAct, AZAct);
+  // stepComplete &= L2.CartesianMove(AXAct, AYAct, AZAct);
+  stepComplete &= L3.CartesianMove(AXAct, AYAct, AZAct);
+  // stepComplete &= L4.CartesianMove(AXAct, AYAct, AZAct);
 
   if (stepComplete) {
     commandStep++;
@@ -343,42 +356,21 @@ void setup() {
   // THIS SHOULDN'T BE NEEDED FOR STRONG SERVOS WITH ACCURATE CONSTRUCTION.
 
   // all servos at 90 degree after setup
-  // left rear
-  L1J1.Setup(L1J1Pin);
-  L1J2.Setup(L1J2Pin);
-  L1J3.Setup(L1J3Pin);
-
-  // left front
-  L2J1.Setup(L2J1Pin, true);
-  L2J2.Setup(L2J2Pin, true);
-  L2J3.Setup(L2J3Pin, true);
-
-  // right front
-  L3J1.Setup(L3J1Pin);
-  L3J2.Setup(L3J2Pin);
-  L3J3.Setup(L3J3Pin);
-
-  // right rear
-  L4J1.Setup(L4J1Pin,true);
-  L4J2.Setup(L4J2Pin,true);
-  L4J3.Setup(L4J3Pin,true);
-
+  L1.Setup();
+  L2.Setup();
+  L3.Setup();
+  L4.Setup();
   // while (1)
   //   ;
-
-  // L1.Setup();
-  // L2.Setup();
-  // L3.Setup();
-  // L4.Setup();
 
   // Stand Up
   bool l = false;
   while (!l) {
     l = true;
-    l &= L1.CartesianMove(0, 0, 0, &L1J1, &L1J2, &L4J3);
-    l &= L2.CartesianMove(0, 0, 0, &L2J1, &L2J2, &L2J3);
-    l &= L3.CartesianMove(0, 0, 0, &L3J1, &L3J2, &L3J3);
-    l &= L4.CartesianMove(0, 0, 0, &L4J1, &L4J2, &L4J3);
+    l &= L1.CartesianMove(0, 0, 0);
+    l &= L2.CartesianMove(0, 0, 0);
+    l &= L3.CartesianMove(0, 0, 0);
+    l &= L4.CartesianMove(0, 0, 0);
   }
   delay(2000);
 #ifdef DEBUG
