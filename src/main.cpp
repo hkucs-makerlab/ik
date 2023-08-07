@@ -123,13 +123,14 @@ class Joint {
  private:
   int angle;
   unsigned long prevTime;
-
- public:
   bool Inverted;
   int8_t AngleOffset;
+  Servo _Servo;
+  uint8_t _Pin;
 
+ public:
   // CTOR
-  Joint() :angle(90),Inverted(false),AngleOffset(0){
+  Joint() : angle(90), Inverted(false), AngleOffset(0) {
   }
 
   // Methods
@@ -138,12 +139,12 @@ class Joint {
     Inverted = I;
     AngleOffset = Ao;
     _Servo.attach(_Pin, 500, 2500);
-    _Servo.write(angle = 90);
+    _Servo.write(angle + AngleOffset);
     prevTime = millis();
   }
 
   bool Update(int targetAngle, unsigned long __angleTimeGap = 10) {
-    //Serial.println(targetAngle);
+    // Serial.println(targetAngle);
     if (angle == targetAngle) {
       return true;
     }
@@ -165,24 +166,19 @@ class Joint {
     }
     return false;
   }
-
- private:
-  // Variables
-  Servo _Servo;
-  uint8_t _Pin;
 };
 
 // ##### ##### ##### ##### ##### ##### ##### ##### ##### LEG CLASS
 class Leg {
  public:
   // CTOR
-  Leg(): doIK(true),_LegAngle(0) {
+  Leg() : doIK(true), _LegAngle(0) {
   }
 
   // THE OFFSETS ALLOW ALL THE LEGS TO 'REST'
   // AT THE SAME PLACE RELATIVE TO J1, THE ANGLE
   // ALLOWS THEM TO MOVE IN THE SAME XY PLANE
-  void Setup(double Angle=0) {
+  void Setup(double Angle = 0) {
     _LegAngle = Angle;
     doIK = true;
   }
@@ -259,7 +255,7 @@ class Leg {
 #define L6J1Pin 4
 #define L6J2Pin 2
 #define L6J3Pin L4J3Pin
-#endif // ESP32
+
 
 // Legs
 Leg L1;
@@ -291,6 +287,7 @@ Joint L5J3;
 
 Joint L6J1;
 Joint L6J2;
+#endif  // ESP32
 
 // Joint Variables
 double AXAct = 0.0;
@@ -310,7 +307,7 @@ void loop() {
   stepComplete &= L5.CartesianMove(AXAct, AYAct, AZAct, &L5J1, &L5J2, &L5J3);
   // stepComplete &= L6.CartesianMove(AXAct, AYAct, AZAct, &L6J1, &L6J2, &L3J3);
 
-  if (stepComplete) {  
+  if (stepComplete) {
     commandStep++;
     if (commandStep > lastLine) {
       commandStep = 0;
@@ -361,8 +358,8 @@ void setup() {
   L5J2.Setup(L5J2Pin);
   L5J3.Setup(L5J3Pin);
 
-  L6J1.Setup(L6J1Pin,true);
-  L6J2.Setup(L6J2Pin,true);
+  L6J1.Setup(L6J1Pin, true);
+  L6J2.Setup(L6J2Pin, true);
   // while (1)
   //   ;
 
