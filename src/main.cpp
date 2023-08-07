@@ -127,11 +127,12 @@ class Joint {
  private:
   int angle;
   unsigned long prevTime;
-
- public:
   bool Inverted;
   int8_t AngleOffset;
+  Servo _Servo;
+  uint8_t _Pin;
 
+ public:
   // CTOR
   Joint() : angle(90), Inverted(false), AngleOffset(0) {
   }
@@ -142,7 +143,7 @@ class Joint {
     Inverted = I;
     AngleOffset = Ao;
     _Servo.attach(_Pin, 500, 2500);
-    _Servo.write(angle = 90);
+    _Servo.write(angle + AngleOffset);
     prevTime = millis();
   }
 
@@ -169,11 +170,6 @@ class Joint {
     }
     return false;
   }
-
- private:
-  // Variables
-  Servo _Servo;
-  uint8_t _Pin;
 };
 
 // ##### ##### ##### ##### ##### ##### ##### ##### ##### LEG CLASS
@@ -240,6 +236,7 @@ class Leg {
 // ##### ##### ##### ##### ##### ##### ##### ##### ##### MAIN
 // Servo pins
 #ifdef ESP32
+
 #define L1J1Pin 5
 #define L1J2Pin 18
 #define L1J3Pin 19
@@ -373,7 +370,6 @@ void setup() {
   // L2.Setup();
   // L3.Setup();
   // L4.Setup();
-
 
   // Stand Up
   bool l = false;
