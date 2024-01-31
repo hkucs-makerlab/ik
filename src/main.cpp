@@ -67,7 +67,7 @@ Leg L3(L3J1, L3J2, L3J3);  // right front
 Leg L4(L4J1, L4J2, L4J3);  // right rear
 
 
-CreepGait gait(L1, L2, L3, L4);
+Gait gait(L1, L2, L3, L4);
 
 void loop() {
   gait.test();

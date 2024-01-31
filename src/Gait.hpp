@@ -28,7 +28,46 @@
 #define DEBUG_PRINT(x)
 #endif
 
-static const double lines[][3] = {{0.0, 0.0, 0.0},
+
+
+class Gait {
+  Leg &leftRear;
+  Leg &leftFront;
+  Leg &rightFront;
+  Leg &rightRear;
+
+ public:
+  Gait(Leg &l1, Leg &l2, Leg &l3, Leg &l4)
+      : leftRear(l1), leftFront(l2), rightFront(l3), rightRear(l4){}
+
+  void setup() {
+    // all servos at 90 degree after setup
+    leftRear.Setup();
+    leftFront.Setup();
+    rightFront.Setup();
+    rightRear.Setup();
+    //
+    stance();
+  }
+
+  void stance() {
+    bool l = false;
+    while (!l) {
+      l = true;
+      l &= leftRear.CartesianMove(0, 0, 0);
+      l &= leftFront.CartesianMove(0, 0, 0);
+      l &= rightFront.CartesianMove(0,0, 0);
+      l &= rightRear.CartesianMove(0, 0, 0);
+    }
+  }
+
+   void test() {
+    static uint8_t step = 0;
+    static double AXAct = 0;
+    static double AYAct = 0;
+    static double AZAct = 0;
+
+    static const double steps[][3] = {{0.0, 0.0, 0.0},
 
                                   {-60.0, 40.0, 20.0}, {-60.0, 40.0, -20.0},
                                   {60.0, 40.0, -20.0}, {60.0, 60.0, 20.0},
@@ -78,65 +117,24 @@ static const double lines[][3] = {{0.0, 0.0, 0.0},
                                   {60.0, 0.0, -20.0},  {60.0, 20.0, 0.0},
 
                                   {0.0, 0.0, 0.0}};
-
-class CreepGait {
-  Leg &leftRear;
-  Leg &leftFront;
-  Leg &rightFront;
-  Leg &rightRear;
-
-  // Joint Variables
-  double AXAct;
-  double AYAct;
-  double AZAct;
-
-  uint8_t step;
-
- public:
-  CreepGait(Leg &l1, Leg &l2, Leg &l3, Leg &l4)
-      : leftRear(l1), leftFront(l2), rightFront(l3), rightRear(l4),
-      AXAct(0),AYAct(0),AZAct(0),step(0) {}
-
-  void setup() {
-    // all servos at 90 degree after setup
-    leftRear.Setup();
-    leftFront.Setup();
-    rightFront.Setup();
-    rightRear.Setup();
-
-    standUp();
-  }
-
-  void standUp() {
-    bool l = false;
-    while (!l) {
-      l = true;
-      l &= leftRear.CartesianMove(AXAct, AYAct, AZAct);
-      l &= leftFront.CartesianMove(AXAct, AYAct, AZAct);
-      l &= rightFront.CartesianMove(AXAct,AYAct, AZAct);
-      l &= rightRear.CartesianMove(AXAct, AYAct, AZAct);
-    }
-  }
-
-  void test() {
-    const int lastLine = 62;
+    const int lastStep = 62;
     bool stepComplete = true;
 
-    //stepComplete &= leftRear.CartesianMove(AXAct, AYAct, AZAct);
-    //stepComplete &= leftFront.CartesianMove(AXAct, AYAct, AZAct);
+    // stepComplete &= leftRear.CartesianMove(AXAct, AYAct, AZAct);
+    // stepComplete &= leftFront.CartesianMove(AXAct, AYAct, AZAct);
     stepComplete &= rightFront.CartesianMove(AXAct, AYAct, AZAct);
-    //stepComplete &= rightRear.CartesianMove(AXAct, AYAct, AZAct);
+    // stepComplete &= rightRear.CartesianMove(AXAct, AYAct, AZAct);
 
     if (stepComplete) {
-      if (step > lastLine) {
+      if (step > lastStep) {
         step = 0;
         while (1)
           ;
         return;
       }
-      AXAct = lines[step][0];
-      AYAct = lines[step][1];
-      AZAct = lines[step][2];
+      AXAct = steps[step][0];
+      AYAct = steps[step][1];
+      AZAct = steps[step][2];
       step++;
       DEBUG_PRINT("xMove: ");
       DEBUG_PRINTL(AXAct);
