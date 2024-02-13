@@ -110,13 +110,9 @@ static const double coordinate1[][3] = {{0.0, 0.0, 0.0},
                                         {0.0, 0.0, 0.0}};  // line 62
 
 static const double coordinate2[][3] = {
-    {0.0, 0.0, 0.0},  // origin
-
-    {-40.0, 40.0, 0.0},   // sweep left
-    {-40.0, 40.0, 20.0},  // up
-    {40.0, 40.0, 20.0},   // sweep right with up
-    {40.0, 40.0, 0.0},    // down
-    {0.0, 0.0, 0.0},      // origin
+    {50.0, 0.0, 20.0},   // sweep right
+    {-50.0, 0.0, 20.0},  // sweep left    
+     {0.0, 0.0, 0.0},    // center
 };
 
 #define COORDINATE coordinate2
