@@ -45,20 +45,20 @@
 
 // Joints
 Joint L1J1(L1J1Pin);
-Joint L1J2(L1J2Pin);
+Joint L1J2(L1J2Pin,10);
 Joint L1J3(L1J3Pin);
 
-Joint L2J1(L2J1Pin, true);
-Joint L2J2(L2J2Pin, true);
-Joint L2J3(L2J3Pin, true);
+Joint L2J1(L2J1Pin, 0,true);
+Joint L2J2(L2J2Pin, -10,true);
+Joint L2J3(L2J3Pin, -10,true);
 
 Joint L3J1(L3J1Pin);
 Joint L3J2(L3J2Pin);
-Joint L3J3(L3J3Pin);
+Joint L3J3(L3J3Pin,-20);
 
-Joint L4J1(L4J1Pin, true);
-Joint L4J2(L4J2Pin, true);
-Joint L4J3(L4J3Pin, true);
+Joint L4J1(L4J1Pin, 0,true);
+Joint L4J2(L4J2Pin, 0,true);
+Joint L4J3(L4J3Pin, 0,true);
 
 // Legs
 Leg L1(L1J1, L1J2, L1J3);  // left rear
@@ -82,10 +82,11 @@ void setup() {
 #endif
 
   gait.setup();
-  delay(2000);
 #ifdef DEBUG
   Serial.println("[start]");
 #endif
   // while (1)
   //   ;
+    gait.stance();
+  delay(2000);
 }

@@ -19,12 +19,10 @@ class Leg {
   // THE OFFSETS ALLOW ALL THE LEGS TO 'REST'
   // AT THE SAME PLACE RELATIVE TO J1, THE ANGLE
   // ALLOWS THEM TO MOVE IN THE SAME XY PLANE
-  void Setup(double Angle = 0, int8_t Ao = 0) {
-    _LegAngle = Angle;
-    _coxa.Setup(Ao);
-    _fumer.Setup(Ao);
-    _tibia.Setup(Ao);
-    doIK = true;
+  void Setup() {
+    _coxa.attach();
+    _fumer.attach();
+    _tibia.attach();
   }
 
   bool CartesianMove(double X, double Y, double Z) {

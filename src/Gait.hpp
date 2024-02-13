@@ -46,8 +46,6 @@ class Gait {
     leftFront.Setup();
     rightFront.Setup();
     rightRear.Setup();
-    //
-    stance();
   }
 
   void stance() {
@@ -69,11 +67,15 @@ class Gait {
 
     static const double steps[][3] = {{0.0, 0.0, 0.0},
 
-                                  {-60.0, 40.0, 20.0}, {-60.0, 40.0, -20.0},
-                                  {60.0, 40.0, -20.0}, {60.0, 60.0, 20.0},
+                                  {-60.0, 40.0, 20.0}, 
+                                  {-60.0, 40.0, -20.0},
+                                  {60.0, 40.0, -20.0}, 
+                                  {60.0, 60.0, 20.0},
 
-                                  {-60.0, 30.0, 20.0}, {-60.0, 30.0, -20.0},
-                                  {60.0, 30.0, -20.0}, {60.0, 50.0, 20.0},
+                                  {-60.0, 30.0, 20.0}, 
+                                  {-60.0, 30.0, -20.0},
+                                  {60.0, 30.0, -20.0}, 
+                                  {60.0, 50.0, 20.0},
 
                                   {-60.0, 20.0, 20.0}, {-60.0, 20.0, -20.0},
                                   {60.0, 20.0, -20.0}, {60.0, 40.0, 20.0},
@@ -116,14 +118,15 @@ class Gait {
                                   {60.0, 40.0, 0.0},   {60.0, 40.0, -20.0},
                                   {60.0, 0.0, -20.0},  {60.0, 20.0, 0.0},
 
-                                  {0.0, 0.0, 0.0}};
-    const int lastStep = 62;
+                                  {0.0, 0.0, 0.0}}; // line 62
+    //const int lastStep = 62;
+    const int lastStep = 1;
     bool stepComplete = true;
 
-    // stepComplete &= leftRear.CartesianMove(AXAct, AYAct, AZAct);
-    // stepComplete &= leftFront.CartesianMove(AXAct, AYAct, AZAct);
+    //stepComplete &= leftRear.CartesianMove(AXAct, AYAct, AZAct);
+    //stepComplete &= leftFront.CartesianMove(AXAct, AYAct, AZAct);
     stepComplete &= rightFront.CartesianMove(AXAct, AYAct, AZAct);
-    // stepComplete &= rightRear.CartesianMove(AXAct, AYAct, AZAct);
+    //stepComplete &= rightRear.CartesianMove(AXAct, AYAct, AZAct);
 
     if (stepComplete) {
       if (step > lastStep) {

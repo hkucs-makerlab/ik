@@ -19,25 +19,19 @@ class Joint {
 
  public:
   // CTOR
-  Joint(uint8_t pin = -1, bool inv = false) : Inverted(inv), angle(90), AngleOffset(0), _Pin(pin) {
+  Joint(uint8_t pin = -1, int8_t Ao = 0, bool inv = false) : Inverted(inv), angle(90), AngleOffset(Ao), _Pin(pin) {
   }
 
-  // Methods
-  void Setup(uint8_t Pin, bool I = false, int8_t Ao = 0) {
-    _Pin = Pin;
-    Inverted = I;
-    AngleOffset = Ao;
+  void attach() {
     _Servo.attach(_Pin, 500, 2400);
     _Servo.write(angle + AngleOffset);
     prevTime = millis();
   }
 
-  void Setup(int8_t Ao = 0) {
+  void setAngleOffset(int8_t Ao) {
     AngleOffset = Ao;
-    _Servo.attach(_Pin, 500, 2400);
-    _Servo.write(angle + AngleOffset);
-    prevTime = millis();
   }
+
 
   bool Update(int targetAngle, unsigned long __angleTimeGap = 10) {
     // Serial.println(targetAngle);
@@ -54,6 +48,7 @@ class Joint {
         angle++;
         if (angle > 180) angle = 180;
       }
+      //
       if (Inverted) {
         _Servo.write(180 - angle + AngleOffset);
       } else {
