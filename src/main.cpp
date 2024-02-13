@@ -75,8 +75,7 @@ void loop() {
 }
 
 void setup() {
-// Debug  while (1)
-    ;
+
 #ifdef DEBUG
   Serial.begin(115200);
 #endif
