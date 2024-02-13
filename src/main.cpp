@@ -52,7 +52,7 @@ Joint L2J1(L2J1Pin, 0,true);
 Joint L2J2(L2J2Pin, -10,true);
 Joint L2J3(L2J3Pin, -10,true);
 
-Joint L3J1(L3J1Pin);
+Joint L3J1(L3J1Pin,-10);
 Joint L3J2(L3J2Pin);
 Joint L3J3(L3J3Pin,-20);
 
