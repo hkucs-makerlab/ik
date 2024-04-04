@@ -204,7 +204,7 @@ class Leg {
       }
       // CALCULATE INVERSE KINEMATIC SOLUTION
       J1 = atan(X / Y) * (180 / PI);
-      double H = sqrt((Y * Y) + (X * X));
+      double H = sqrt((Y * Y) + (X * X))+J1L;
       double L = sqrt((H * H) + (Z * Z));
       J3 = acos(((J2L * J2L) + (J3L * J3L) - (L * L)) / (2 * J2L * J3L)) * (180 / PI);
       double B = acos(((L * L) + (J2L * J2L) - (J3L * J3L)) / (2 * L * J2L)) * (180 / PI);
