@@ -114,8 +114,11 @@ static const double coordinate2[][3] = {
     {-50.0, 0.0, 20.0},  // sweep left    
      {0.0, 0.0, 0.0},    // center
 };
+static const double coordinate3[][3] = { 
+     {0.0, 0.0, 0.0},    {0.0, 0.0, -30.0}
+};
 
-#define COORDINATE coordinate2
+#define COORDINATE coordinate3
 #define LAST_STEP ((sizeof(COORDINATE) / 3) / sizeof(double)) - 1
 
 class Gait {
@@ -138,12 +141,15 @@ class Gait {
 
   void stance() {
     bool l = false;
+    double z=0;
+    double x=0;
+    double y=0;
     while (!l) {
       l = true;
-      l &= leftRear.CartesianMove(0, 0, 0);
-      l &= leftFront.CartesianMove(0, 0, 0);
-      l &= rightFront.CartesianMove(0, 0, 0);
-      l &= rightRear.CartesianMove(0, 0, 0);
+      l &= leftRear.CartesianMove(x, y, z);
+      l &= leftFront.CartesianMove(x, y, z);
+      l &= rightFront.CartesianMove(x, y, z);
+      l &= rightRear.CartesianMove(x, y, z);
     }
   }
 
@@ -158,21 +164,13 @@ class Gait {
     const int lastStep = LAST_STEP;
 
     // stepComplete &= leftRear.CartesianMove(AXAct, AYAct, AZAct);
-    // stepComplete &= leftFront.CartesianMove(AXAct, AYAct, AZAct);
-    stepComplete &= rightFront.CartesianMove(AXAct, AYAct, AZAct);
+    stepComplete &= leftFront.CartesianMove(AXAct, AYAct, AZAct);
+    //stepComplete &= rightFront.CartesianMove(AXAct, AYAct, AZAct);
     // stepComplete &= rightRear.CartesianMove(AXAct, AYAct, AZAct);
 
     if (stepComplete) {
-      if (step > lastStep) {
-        step = 0;
-        while (1)
-          ;
-        return;
-      }
-      AXAct = steps[step][0];
-      AYAct = steps[step][1];
-      AZAct = steps[step][2];
-      step++;
+      DEBUG_PRINT("step: ");
+      DEBUG_PRINTL(step);
       DEBUG_PRINT("xMove: ");
       DEBUG_PRINTL(AXAct);
       DEBUG_PRINT("yMove: ");
@@ -180,6 +178,15 @@ class Gait {
       DEBUG_PRINT("zMove: ");
       DEBUG_PRINTL(AZAct);
       DEBUG_PRINTL("");
+      if (step > lastStep) {
+        step = 0;
+        //while (1);
+        return;
+      }
+      AXAct = steps[step][0];
+      AYAct = steps[step][1];
+      AZAct = steps[step][2];
+      step++;
     }
   }
 };

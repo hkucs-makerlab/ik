@@ -1,14 +1,23 @@
 #pragma once
 
 // Constants
-const double J1L = 33.0;
-const double J2L = 46.0;
-const double J3L = 82.0;
+// const double J1L = 33.0;
+// const double J2L = 46.0;
+// const double J3L = 82.0;
 
-const double Y_Rest = 40.0;
-const double Z_Rest = -48.0;
+// const double Y_Rest = 40.0;
+// const double Z_Rest = -48.0;
 
-const double J3_LegAngle = 10;
+// const double J3_LegAngle = 10;
+
+const double J1L = 30.0;
+const double J2L = 47.0;
+const double J3L = 106;
+
+const double Y_Rest = 58; 
+const double Z_Rest = -65;
+
+const double J3_LegAngle = 0; 
 
 class Leg {
  public:
@@ -48,6 +57,18 @@ class Leg {
       double B = acos(((L * L) + (J2L * J2L) - (J3L * J3L)) / (2 * L * J2L)) * (180 / PI);
       double A = atan(Z / H) * (180 / PI);  // BECAUSE Z REST IS NEGATIVE, THIS RETURNS A NEGATIVE VALUE
       J2 = (B + A);                         // BECAUSE 'A' IS NEGATIVE AT REST WE NEED TO INVERT '-' TO '+'
+            if (isnan(J1)) {
+        Serial.println("invalid J1");
+        return true;
+      }
+      if (isnan(J2)) {
+        Serial.println("invalid J2");
+        return true;
+      }
+      if (isnan(J3)) {
+        Serial.println("invalid J3");
+        return true;
+      }    
       doIK = false;
     }
     //

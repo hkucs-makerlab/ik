@@ -33,12 +33,15 @@ class Joint {
   }
 
 
-  bool Update(int targetAngle, unsigned long __angleTimeGap = 10) {
+  bool Update(int targetAngle, unsigned long __angleTimeGap = 20) {
     // Serial.println(targetAngle);
     if (angle == targetAngle) {
       return true;
     }
-
+    if (targetAngle < 0) {
+      Serial.println("target angle is not valid");
+      return true;
+    }
     if (millis() - prevTime >= __angleTimeGap) {
       prevTime = millis();
       if (targetAngle < angle) {
