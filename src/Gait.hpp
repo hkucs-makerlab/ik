@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Leg.hpp"
 // CO-ORDINATE SYSTEM
 //          x
 //          ^
@@ -114,8 +115,9 @@ static const double coordinate2[][3] = {
     {-50.0, 0.0, 20.0},  // sweep left    
      {0.0, 0.0, 0.0},    // center
 };
+
 static const double coordinate3[][3] = { 
-     {0.0, 0.0, 0.0},    {0.0, 0.0, -30.0}
+     {0.0, 0.0, 0.0},  {40.0, 30.0, 20.0}
 };
 
 #define COORDINATE coordinate3
@@ -163,10 +165,10 @@ class Gait {
     const double(*steps)[3] = COORDINATE;
     const int lastStep = LAST_STEP;
 
-    // stepComplete &= leftRear.CartesianMove(AXAct, AYAct, AZAct);
+    stepComplete &= leftRear.CartesianMove(AXAct, AYAct, AZAct);
     stepComplete &= leftFront.CartesianMove(AXAct, AYAct, AZAct);
-    //stepComplete &= rightFront.CartesianMove(AXAct, AYAct, AZAct);
-    // stepComplete &= rightRear.CartesianMove(AXAct, AYAct, AZAct);
+    stepComplete &= rightFront.CartesianMove(AXAct, AYAct, AZAct);
+    stepComplete &= rightRear.CartesianMove(AXAct, AYAct, AZAct);
 
     if (stepComplete) {
       DEBUG_PRINT("step: ");
@@ -180,7 +182,7 @@ class Gait {
       DEBUG_PRINTL("");
       if (step > lastStep) {
         step = 0;
-        //while (1);
+        while (1);
         return;
       }
       AXAct = steps[step][0];

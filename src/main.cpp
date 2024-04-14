@@ -1,13 +1,11 @@
 
 #include <Arduino.h>
 
-#include "Joint.hpp"
-#include "Leg.hpp"
 #include "Gait.hpp"
+#include "LegTest.hpp"
 
 // Servo pins
 #ifdef ESP32
-
 #define L1J1Pin 5
 #define L1J2Pin 18
 #define L1J3Pin 19
@@ -52,7 +50,7 @@ Joint L2J1(L2J1Pin,0,true);
 Joint L2J2(L2J2Pin,0,true);
 Joint L2J3(L2J3Pin,0,true);
 
-Joint L3J1(L3J1Pin,0);
+Joint L3J1(L3J1Pin,10);
 Joint L3J2(L3J2Pin,0);
 Joint L3J3(L3J3Pin,0);
 
@@ -68,9 +66,11 @@ Leg L4(L4J1, L4J2, L4J3);  // right rear
 
 
 Gait gait(L1, L2, L3, L4);
+LegTest legTest(L3);
 
 void loop() {
-  gait.test();
+  //gait.test();
+  legTest.loop();
   
 }
 
@@ -81,11 +81,13 @@ void setup() {
 #endif
 
   gait.setup();
+  legTest.setup();
 #ifdef DEBUG
   Serial.println("[start]");
 #endif
   // while (1)
   //   ;
   gait.stance();
+  legTest.stance();
   delay(2000);
 }

@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Joint.hpp"
 // Constants
 // const double J1L = 33.0;
 // const double J2L = 46.0;
@@ -10,14 +10,14 @@
 
 // const double J3_LegAngle = 10;
 
-const double J1L = 30.0;
-const double J2L = 47.0;
-const double J3L = 106;
+const double J1L = 0.0;
+const double J2L = 44.03;
+const double J3L = 100.4;
 
-const double Y_Rest = 58; 
-const double Z_Rest = -65;
+const double Y_Rest = 65.85; 
+const double Z_Rest = -67.18;
 
-const double J3_LegAngle = 0; 
+const double J3_LegAngle = 27; 
 
 class Leg {
  public:
