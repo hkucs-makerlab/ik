@@ -135,10 +135,10 @@ class Gait {
 
   void setup() {
     // all servos at 90 degree after setup
-    leftRear.Setup();
-    leftFront.Setup();
-    rightFront.Setup();
-    rightRear.Setup();
+    leftRear.setup();
+    leftFront.setup();
+    rightFront.setup();
+    rightRear.setup();
   }
 
   void stance() {
@@ -148,10 +148,10 @@ class Gait {
     double y=0;
     while (!l) {
       l = true;
-      l &= leftRear.CartesianMove(x, y, z);
-      l &= leftFront.CartesianMove(x, y, z);
-      l &= rightFront.CartesianMove(x, y, z);
-      l &= rightRear.CartesianMove(x, y, z);
+      l &= leftRear.cartesianMove(x, y, z);
+      l &= leftFront.cartesianMove(x, y, z);
+      l &= rightFront.cartesianMove(x, y, z);
+      l &= rightRear.cartesianMove(x, y, z);
     }
   }
 
@@ -165,10 +165,10 @@ class Gait {
     const double(*steps)[3] = COORDINATE;
     const int lastStep = LAST_STEP;
 
-    stepComplete &= leftRear.CartesianMove(AXAct, AYAct, AZAct);
-    stepComplete &= leftFront.CartesianMove(AXAct, AYAct, AZAct);
-    stepComplete &= rightFront.CartesianMove(AXAct, AYAct, AZAct);
-    stepComplete &= rightRear.CartesianMove(AXAct, AYAct, AZAct);
+    stepComplete &= leftRear.cartesianMove(AXAct, AYAct, AZAct);
+    stepComplete &= leftFront.cartesianMove(AXAct, AYAct, AZAct);
+    stepComplete &= rightFront.cartesianMove(AXAct, AYAct, AZAct);
+    stepComplete &= rightRear.cartesianMove(AXAct, AYAct, AZAct);
 
     if (stepComplete) {
       DEBUG_PRINT("step: ");

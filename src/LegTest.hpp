@@ -1,5 +1,4 @@
 #pragma once
-#include "DataTypes.hpp"
 #include "Leg.hpp"
 
 #define DEBUG_PRINTL(x) Serial.println(x)
@@ -12,42 +11,51 @@ class LegTest {
   DataTypes::Vector initPos;
 
  public:
-  //GaitTest(Leg &l) : leg(l), step(0), initPos({0,-30,-20}){}
-  LegTest(Leg &l) : leg(l), step(0), initPos({0, 0, 0}){}
-  void setup() { leg.Setup(); }
+  LegTest(Leg &l) : leg(l), step(0), initPos({0, -30, 0}){}
+  void setup() { 
+    leg.setup(); 
+    leg.setAngleInterval(10);
+    leg.setAngleStep(1);
+   }
 
   void stance() {
-    while (!leg.CartesianMove(initPos.x, initPos.y, initPos.z));
+    while (!leg.cartesianMove(initPos));
   }
 
   bool loop() {
-    DataTypes::Vector nextPos={40, 0, 0};
-    DataTypes::Vector steps[] = {initPos, nextPos};
+    double x = initPos.x;
+    double y = initPos.y;
+    double z = initPos.z;
+    //DataTypes::Vector steps[] = {{x,y,z},{x,y,z+20}, {x+50, y, z+20},{x + 50, y, z}};
+    DataTypes::Vector steps[] = {{x-50,y,z},{x-50,y,z+20}, {x+50, y, z+20},{x + 50, y, z}};
     DataTypes::Vector *p;
     int lastStepOfsteps;
     bool stepComplete = true;
 
     lastStepOfsteps = sizeof(steps) / sizeof(DataTypes::Vector) - 1;
     p = steps;
-    stepComplete &= leg.CartesianMove(p[step].x, p[step].y, p[step].z);
-
-    if (stepComplete) {
-      DEBUG_PRINT("step: ");
-      DEBUG_PRINTL(step);
-      DEBUG_PRINT("xMove: ");
-      DEBUG_PRINTL(p[step].x);
-      DEBUG_PRINT("yMove: ");
-      DEBUG_PRINTL(p[step].y);
-      DEBUG_PRINT("zMove: ");
-      DEBUG_PRINTL(p[step].z);
-      DEBUG_PRINTL("");
-      if (step >= lastStepOfsteps) {
-        step = 0;
-        //while (1);
-        return true;
-      } else {
-        step++;
-      }
+    stepComplete &= leg.cartesianMove(p[step]);
+    static unsigned long timeout=0;
+    if (millis() > timeout) {
+      timeout=millis() + 100;
+      if (stepComplete) {
+        // DEBUG_PRINT("step: ");
+        // DEBUG_PRINTL(step);
+        // DEBUG_PRINT("xMove: ");
+        // DEBUG_PRINTL(p[step].x);
+        // DEBUG_PRINT("yMove: ");
+        // DEBUG_PRINTL(p[step].y);
+        // DEBUG_PRINT("zMove: ");
+        // DEBUG_PRINTL(p[step].z);
+        // DEBUG_PRINTL("");
+        if (step >= lastStepOfsteps) {
+          step = 0;
+          //while (1);
+          return true;
+        } else {
+          step++;
+        }
+      } //
     }
     return false;
   }

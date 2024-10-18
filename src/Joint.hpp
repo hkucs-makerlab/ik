@@ -1,64 +1,70 @@
 #pragma once
 
-#ifdef ESP32
-#include <ESP32Servo.h>
-#endif
-
-#ifdef AVR
+#include <Arduino.h>
 #include <Servo.h>
-#endif
 
-class Joint {
- private:
-  unsigned long prevTime;
-  bool Inverted;
-  int angle;
-  int8_t AngleOffset;
-  Servo _Servo;
-  uint8_t _Pin;
+#define Console Serial
+
+class Joint : public Servo {
+  int _pin, _offset, _refAngle;
+  bool _rev;
+  unsigned long _prevTime;
+  int _timeInterval;
+  int _angleInterval;
 
  public:
-  // CTOR
-  Joint(uint8_t pin, int8_t Ao = 0, bool inv = false)
-      : Inverted(inv), angle(90), AngleOffset(Ao), _Pin(pin) {}
+  Joint(int pin, int offset = 0, bool rev = false)
+      : _pin(pin),
+        _offset(offset),
+        _refAngle(90),
+        _rev(rev),
+        _prevTime(0),
+        _timeInterval(5),
+        _angleInterval(3) {}
 
-  void attach() {
-    _Servo.attach(_Pin, 500, 2400);
-    writeAngle();
-    prevTime = millis();
+  void setup() {
+    attach(_pin, 500, 2400);
+    write(_refAngle);
+    // Serial.println("Joint setup " + String(_pin));
+  }
+  
+
+  void setTimeInterval(int t) { _timeInterval = t; }
+
+  void setAngleInterval(int a) { _angleInterval = a; }
+
+  void toggleInvert() {
+    _rev = !_rev;
+    write(_refAngle);
   }
 
-  void setAngleOffset(int8_t Ao) { AngleOffset = Ao; }
+  inline void write(int angle) {
+    angle = constrain(angle + _offset, 0, 180);
+    if (_rev) angle = 180 - angle;
+    Servo::write(angle);
+  }
 
-  bool Update(int targetAngle, unsigned long __angleTimeGap = 20) {
-    // Serial.println(targetAngle);
-    if (angle == targetAngle) {
+  bool interpolateMove(int targetAngle) {
+    if (_refAngle == targetAngle) {
       return true;
     }
-    if (targetAngle < 0) {
-      Serial.println("target angle is not valid");
-      return true;
-    }
-    if (millis() - prevTime >= __angleTimeGap) {
-      if (targetAngle < angle) {
-        angle--;
-        if (angle < 0) angle = 0;
+
+    if (millis() > _prevTime) {
+      if (targetAngle < _refAngle) {
+        _refAngle -= _angleInterval;
+        if (_refAngle <= targetAngle) {
+          _refAngle = targetAngle;
+        }
       } else {
-        angle++;
-        if (angle > 180) angle = 180;
+        _refAngle += _angleInterval;
+        if (_refAngle >= targetAngle) {
+          _refAngle = targetAngle;
+        }
       }
       //
-      writeAngle();
-      prevTime = millis();
+      write(_refAngle);
+      _prevTime = millis() + _timeInterval;
     }
     return false;
   }
-  private:
-    inline void writeAngle() {
-      if (Inverted) {
-        _Servo.write(180 - (angle + AngleOffset));
-      } else {
-        _Servo.write(angle + AngleOffset);
-      }
-    }
 };

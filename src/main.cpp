@@ -59,10 +59,10 @@ Joint L4J2(L4J2Pin, 0,true);
 Joint L4J3(L4J3Pin, 0,true);
 
 // Legs
-Leg L1(L1J1, L1J2, L1J3);  // left rear
-Leg L2(L2J1, L2J2, L2J3);  // left front
-Leg L3(L3J1, L3J2, L3J3);  // right front
-Leg L4(L4J1, L4J2, L4J3);  // right rear
+Leg L1(1,L1J1, L1J2, L1J3);  // left rear
+Leg L2(2,L2J1, L2J2, L2J3);  // left front
+Leg L3(3,L3J1, L3J2, L3J3);  // right front
+Leg L4(4,L4J1, L4J2, L4J3);  // right rear
 
 
 Gait gait(L1, L2, L3, L4);
@@ -80,14 +80,14 @@ void setup() {
   Serial.begin(115200);
 #endif
 
-  gait.setup();
+  //gait.setup();
   legTest.setup();
 #ifdef DEBUG
   Serial.println("[start]");
 #endif
   // while (1)
   //   ;
-  gait.stance();
+  //gait.stance();
   legTest.stance();
   delay(2000);
 }
