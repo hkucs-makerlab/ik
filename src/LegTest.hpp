@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Leg.hpp"
 
 #define DEBUG_PRINTL(x) Serial.println(x)
@@ -26,8 +27,10 @@ class LegTest {
     double x = initPos.x;
     double y = initPos.y;
     double z = initPos.z;
-    //DataTypes::Vector steps[] = {{x,y,z},{x,y,z+20}, {x+50, y, z+20},{x + 50, y, z}};
-    DataTypes::Vector steps[] = {{x-50,y,z},{x-50,y,z+20}, {x+50, y, z+20},{x + 50, y, z}};
+    int xOffset = 50;
+    int zOffset = 20;
+    //DataTypes::Vector steps[] = {{x,y,z},{x,y,z+zOffset}, {x+xOffset, y, z+zOffset},{x + xOffset, y, z}};
+    DataTypes::Vector steps[] = {{x-xOffset,y,z},{x - xOffset,y, z + zOffset}, {x+xOffset, y, z+zOffset},{x + xOffset, y, z}};
     DataTypes::Vector *p;
     int lastStepOfsteps;
     bool stepComplete = true;
@@ -39,15 +42,15 @@ class LegTest {
     if (millis() > timeout) {
       timeout=millis() + 100;
       if (stepComplete) {
-        // DEBUG_PRINT("step: ");
-        // DEBUG_PRINTL(step);
-        // DEBUG_PRINT("xMove: ");
-        // DEBUG_PRINTL(p[step].x);
-        // DEBUG_PRINT("yMove: ");
-        // DEBUG_PRINTL(p[step].y);
-        // DEBUG_PRINT("zMove: ");
-        // DEBUG_PRINTL(p[step].z);
-        // DEBUG_PRINTL("");
+        DEBUG_PRINT("step: ");
+        DEBUG_PRINTL(step);
+        DEBUG_PRINT("xMove: ");
+        DEBUG_PRINTL(p[step].x);
+        DEBUG_PRINT("yMove: ");
+        DEBUG_PRINTL(p[step].y);
+        DEBUG_PRINT("zMove: ");
+        DEBUG_PRINTL(p[step].z);
+        DEBUG_PRINTL("");
         if (step >= lastStepOfsteps) {
           step = 0;
           //while (1);

@@ -1,7 +1,6 @@
 
 #include <Arduino.h>
 
-#include "Gait.hpp"
 #include "LegTest.hpp"
 
 // Servo pins
@@ -50,7 +49,7 @@ Joint L2J1(L2J1Pin,0,true);
 Joint L2J2(L2J2Pin,0,true);
 Joint L2J3(L2J3Pin,0,true);
 
-Joint L3J1(L3J1Pin,10);
+Joint L3J1(L3J1Pin,0);
 Joint L3J2(L3J2Pin,0);
 Joint L3J3(L3J3Pin,0);
 
@@ -65,29 +64,20 @@ Leg L3(3,L3J1, L3J2, L3J3);  // right front
 Leg L4(4,L4J1, L4J2, L4J3);  // right rear
 
 
-Gait gait(L1, L2, L3, L4);
 LegTest legTest(L3);
 
 void loop() {
-  //gait.test();
   legTest.loop();
-  
 }
 
 void setup() {
 
-#ifdef DEBUG
   Serial.begin(115200);
-#endif
-
-  //gait.setup();
-  legTest.setup();
-#ifdef DEBUG
   Serial.println("[start]");
-#endif
+
+  legTest.setup();
   // while (1)
   //   ;
-  //gait.stance();
   legTest.stance();
   delay(2000);
 }
