@@ -20,6 +20,8 @@
 #define L4J1Pin 25
 #define L4J2Pin 33
 #define L4J3Pin 32
+
+#define SERVO_SETUP_PIN 21
 #endif  // ESP32
 
 #ifdef AVR
@@ -38,6 +40,8 @@
 #define L4J1Pin 4
 #define L4J2Pin 3
 #define L4J3Pin 2
+
+#define SERVO_SETUP_PIN A0
 #endif
 
 // Joints
@@ -67,7 +71,9 @@ Leg L4(4,L4J1, L4J2, L4J3);  // right rear
 LegTest legTest(L3);
 
 void loop() {
-  legTest.loop();
+  legTest.swing();
+  //legTest.move(0,0,0);
+
 }
 
 void setup() {
@@ -76,8 +82,12 @@ void setup() {
   Serial.println("[start]");
 
   legTest.setup();
-  // while (1)
-  //   ;
+    if (1) {
+      pinMode(SERVO_SETUP_PIN, INPUT);
+      while (digitalRead(SERVO_SETUP_PIN)) {
+        delay(1000);
+      }
+    }
   legTest.stance();
   delay(2000);
 }

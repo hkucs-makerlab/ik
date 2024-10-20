@@ -12,7 +12,7 @@ class LegTest {
   DataTypes::Vector initPos;
 
  public:
-  LegTest(Leg &l) : leg(l), step(0), initPos({0, -30, 0}){}
+  LegTest(Leg &l) : leg(l), step(0), initPos({0, -60, -20}){}
   void setup() { 
     leg.setup(); 
     leg.setAngleInterval(10);
@@ -20,10 +20,16 @@ class LegTest {
    }
 
   void stance() {
+    //DataTypes::Vector initPos={0,-40,0};
     while (!leg.cartesianMove(initPos));
   }
 
-  bool loop() {
+  void move(double x, double y, double z) {
+    DataTypes::Vector pos ={initPos.x+x, initPos.y+y, initPos.z+z};
+    leg.move(pos);
+  }
+
+  bool swing() {
     double x = initPos.x;
     double y = initPos.y;
     double z = initPos.z;
@@ -37,10 +43,12 @@ class LegTest {
 
     lastStepOfsteps = sizeof(steps) / sizeof(DataTypes::Vector) - 1;
     p = steps;
+
     stepComplete &= leg.cartesianMove(p[step]);
+
     static unsigned long timeout=0;
     if (millis() > timeout) {
-      timeout=millis() + 100;
+      timeout=millis() + 3000;
       if (stepComplete) {
         DEBUG_PRINT("step: ");
         DEBUG_PRINTL(step);
