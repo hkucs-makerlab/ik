@@ -47,10 +47,10 @@ class Leg {
     _tibia.setAngleInterval(s);
   }
 
-  void setAngleInterval(uint16_t angleInterval) {
-    _coxa.setAngleInterval(angleInterval);
-    _fumer.setAngleInterval(angleInterval);
-    _tibia.setAngleInterval(angleInterval);
+  void setAngleInterval(int t) {
+    _coxa.setTimeInterval(t);
+    _fumer.setTimeInterval(t);
+    _tibia.setTimeInterval(t);
   }
 
   int getID() {
