@@ -1,11 +1,11 @@
 #pragma once
 
 #include <Arduino.h>
-#include <Servo.h>
+#include <HDServo.h>
 
 #define Console Serial
 
-class Joint : public Servo {
+class Joint : public HDServo {
   int _pin, _offset, _refAngle;
   bool _rev;
   unsigned long _prevTime;
@@ -41,7 +41,7 @@ class Joint : public Servo {
   inline void write(int angle) {
     angle = constrain(angle + _offset, 0, 180);
     if (_rev) angle = 180 - angle;
-    Servo::write(angle);
+    HDServo::write(angle);
   }
 
   bool interpolateMove(int targetAngle) {
