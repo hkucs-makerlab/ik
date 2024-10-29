@@ -83,6 +83,7 @@ void setup() {
   if (1) {
     pinMode(SERVO_SETUP_PIN, INPUT);
     while (digitalRead(SERVO_SETUP_PIN)) {
+      Console.println("[calibrate]");
       delay(1000);
     }
   }
