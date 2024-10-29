@@ -21,7 +21,7 @@
 #define L4J2Pin 33
 #define L4J3Pin 32
 
-#define SERVO_SETUP_PIN 21
+#define SERVO_SETUP_PIN 23
 #endif  // ESP32
 
 #ifdef AVR
@@ -45,17 +45,17 @@
 #endif
 
 // Joints
-Joint L1J1(L1J1Pin);
-Joint L1J2(L1J2Pin);
-Joint L1J3(L1J3Pin);
+Joint L1J1(L1J1Pin,0,false);
+Joint L1J2(L1J2Pin,0,false);
+Joint L1J3(L1J3Pin,0,false);
 
 Joint L2J1(L2J1Pin,0,true);
 Joint L2J2(L2J2Pin,0,true);
 Joint L2J3(L2J3Pin,0,true);
 
-Joint L3J1(L3J1Pin,0);
-Joint L3J2(L3J2Pin,0);
-Joint L3J3(L3J3Pin,0);
+Joint L3J1(L3J1Pin,0,false);
+Joint L3J2(L3J2Pin,0,false);
+Joint L3J3(L3J3Pin,0,false);
 
 Joint L4J1(L4J1Pin, 0,true);
 Joint L4J2(L4J2Pin, 0,true);
@@ -68,7 +68,7 @@ Leg L3(3,L3J1, L3J2, L3J3);  // right front
 Leg L4(4,L4J1, L4J2, L4J3);  // right rear
 
 
-LegTest legTest(L3);
+LegTest legTest(L1);
 
 void loop() {
   legTest.swing();
@@ -79,15 +79,14 @@ void loop() {
 void setup() {
 
   Serial.begin(115200);
-  Serial.println("[start]");
-
   legTest.setup();
-    if (1) {
-      pinMode(SERVO_SETUP_PIN, INPUT);
-      while (digitalRead(SERVO_SETUP_PIN)) {
-        delay(1000);
-      }
+  if (1) {
+    pinMode(SERVO_SETUP_PIN, INPUT);
+    while (digitalRead(SERVO_SETUP_PIN)) {
+      delay(1000);
     }
+  }
   legTest.stance();
   delay(2000);
+  Serial.println("[started]");
 }

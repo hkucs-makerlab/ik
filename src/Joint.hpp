@@ -1,7 +1,11 @@
 #pragma once
 
 #include <Arduino.h>
+#ifdef ESP32
+#include <ESP32Servo.h>
+#else
 #include <Servo.h>
+#endif
 
 #define Console Serial
 
@@ -19,16 +23,14 @@ class Joint : public Servo {
         _refAngle(90),
         _rev(rev),
         _prevTime(0),
-        _timeInterval(5),
-        _angleInterval(3) {}
+        _timeInterval(10),
+        _angleInterval(1) {}
 
   void setup() {
     attach(_pin, 500, 2400);
     write(_refAngle);
-    // Serial.println("Joint setup " + String(_pin));
   }
   
-
   void setTimeInterval(int t) { _timeInterval = t; }
 
   void setAngleInterval(int a) { _angleInterval = a; }

@@ -15,8 +15,6 @@ class LegTest {
   LegTest(Leg &l) : leg(l), step(0), initPos({0, -60, -20}){}
   void setup() { 
     leg.setup(); 
-    leg.setAngleInterval(10);
-    leg.setAngleStep(1);
    }
 
   void stance() {
