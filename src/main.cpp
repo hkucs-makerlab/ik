@@ -68,7 +68,7 @@ Leg L3(3,L3J1, L3J2, L3J3);  // right front
 Leg L4(4,L4J1, L4J2, L4J3);  // right rear
 
 
-LegTest legTest(L1);
+LegTest legTest(L3);
 
 void loop() {
   legTest.swing();
